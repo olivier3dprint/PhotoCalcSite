@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhotoCalc</title>
+<meta name="description" content="Hyperfocale, règle NPF, profondeur de champ, Voie lactée : les calculs photo essentiels, hors ligne.">
+<style>
+  :root {
+    --fond: #0b0e1f;
+    --texte: #edeef5;
+    --texte-att: #a8adc8;
+    --accent: #9b85ff;
+    --accent-2: #7fd8e8;
+    --bordure: #2e3457;
+    --panneau: #171b33;
+    --panneau-haut: #1d2340;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--fond);
+    color: var(--texte);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 24px 96px;
+  }
+  a { color: var(--accent); }
+
+  html:not([data-lang="en"]) .txt-en { display: none; }
+  html[data-lang="en"] .txt-fr { display: none; }
+
+  nav {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 20px;
+  }
+  #bouton-langue {
+    background: var(--panneau);
+    border: 1px solid var(--bordure);
+    color: var(--texte);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  #bouton-langue:hover { border-color: var(--accent); }
+
+  header.hero {
+    text-align: center;
+    padding: 24px 0 8px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .badge .pastille {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    background: var(--accent);
+    box-shadow: 0 0 16px rgba(155, 133, 255, 0.5);
+  }
+  .badge span {
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--texte-att);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+  }
+
+  /* Maquette de l'écran d'accueil de l'appli, en l'absence de captures réelles pour l'instant. */
+  .maquette {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto 28px;
+    background: var(--panneau);
+    border: 1px solid var(--bordure);
+    border-radius: 20px;
+    padding: 16px;
+    text-align: left;
+  }
+  .maquette .section-titre {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--texte-att);
+    text-transform: uppercase;
+    margin: 14px 0 6px;
+  }
+  .maquette .section-titre:first-child { margin-top: 0; }
+  .maquette .carte {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--panneau-haut);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    font-size: 0.82rem;
+  }
+  .maquette .pastille-icone {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+  .maquette .carte.cyan .pastille-icone { background: var(--accent-2); }
+
+  h1 {
+    font-size: 2.2rem;
+    margin: 0 0 4px;
+    color: var(--accent);
+    letter-spacing: 0.01em;
+  }
+  .tagline {
+    font-size: 1.1rem;
+    color: var(--texte);
+    max-width: 560px;
+    margin: 0 auto 20px;
+  }
+  .bientot {
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 10px;
+    background: var(--panneau);
+    border: 1px solid var(--bordure);
+    color: var(--texte-att);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    font-size: 0.9rem;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+    color: var(--accent);
+    margin: 56px 0 20px;
+    text-align: center;
+  }
+  .grille {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+  .fonctionnalite {
+    background: var(--panneau);
+    border: 1px solid var(--bordure);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .fonctionnalite .titre {
+    font-weight: 700;
+    color: var(--accent-2);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .fonctionnalite p {
+    margin: 0;
+    color: var(--texte-att);
+    font-size: 0.92rem;
+  }
+
+  .bandeau {
+    margin-top: 56px;
+    text-align: center;
+    padding: 28px 20px;
+    background: var(--panneau);
+    border: 1px solid var(--bordure);
+    border-radius: 14px;
+  }
+  .bandeau p {
+    margin: 0;
+    color: var(--texte-att);
+  }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--bordure);
+    color: var(--texte-att);
+    font-size: 0.85rem;
+    text-align: center;
+  }
+  footer a { color: var(--texte-att); }
+  footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <nav>
+    <button id="bouton-langue" type="button">LANGUAGE: ENGLISH</button>
+  </nav>
+
+  <header class="hero">
+    <div class="badge"><span class="pastille"></span><span>PhotoCalc</span></div>
+
+    <div class="maquette" aria-hidden="true">
+      <div class="section-titre txt-fr">ASTRO</div>
+      <div class="section-titre txt-en">ASTRO</div>
+      <div class="carte"><span class="pastille-icone"></span><span class="txt-fr">Règle des 500</span><span class="txt-en">500 rule</span></div>
+      <div class="carte"><span class="pastille-icone"></span><span class="txt-fr">Règle NPF</span><span class="txt-en">NPF rule</span></div>
+      <div class="carte cyan"><span class="pastille-icone"></span><span class="txt-fr">Voie lactée</span><span class="txt-en">Milky Way</span></div>
+      <div class="section-titre txt-fr">PHOTO</div>
+      <div class="section-titre txt-en">PHOTO</div>
+      <div class="carte"><span class="pastille-icone"></span><span class="txt-fr">Hyperfocale</span><span class="txt-en">Hyperfocal</span></div>
+      <div class="carte"><span class="pastille-icone"></span><span class="txt-fr">Profondeur de champ</span><span class="txt-en">Depth of field</span></div>
+    </div>
+
+    <h1>PhotoCalc</h1>
+    <p class="tagline txt-fr">Les calculs photo essentiels, directement dans votre poche. Renseignez quelques valeurs, obtenez le résultat immédiatement — hors ligne, sans compte.</p>
+    <p class="tagline txt-en">The essential photography calculations, right in your pocket. Enter a few values, get the result instantly — offline, no account needed.</p>
+
+    <span class="bientot txt-fr">BIENTÔT SUR GOOGLE PLAY</span>
+    <span class="bientot txt-en">COMING SOON ON GOOGLE PLAY</span>
+  </header>
+
+  <h2 class="txt-fr">Ce que PhotoCalc calcule</h2>
+  <h2 class="txt-en">What PhotoCalc calculates</h2>
+
+  <div class="grille">
+    <div class="fonctionnalite">
+      <div class="titre txt-fr">Module Astro</div>
+      <div class="titre txt-en">Astro module</div>
+      <p class="txt-fr">Règle des 500, règle NPF et calcul dédié à la Voie lactée pour connaître le temps de pose maximum avant que les étoiles ne filent.</p>
+      <p class="txt-en">500 rule, NPF rule and a dedicated Milky Way calculation to know the maximum exposure time before stars start trailing.</p>
+    </div>
+    <div class="fonctionnalite">
+      <div class="titre txt-fr">Module Photo</div>
+      <div class="titre txt-en">Photo module</div>
+      <p class="txt-fr">Hyperfocale, profondeur de champ, champ de vision et équivalence focale — pour le paysage, la macro et le choix d'un objectif.</p>
+      <p class="txt-en">Hyperfocal distance, depth of field, field of view and focal length equivalence — for landscape, macro and choosing a lens.</p>
+    </div>
+    <div class="fonctionnalite">
+      <div class="titre txt-fr">Séquences</div>
+      <div class="titre txt-en">Sequences</div>
+      <p class="txt-fr">La durée totale d'une session d'intervallomètre ou d'un empilement, à partir du nombre de photos, du temps de pose et de l'intervalle.</p>
+      <p class="txt-en">The total duration of an intervalometer session or a focus stack, from shot count, exposure time and interval.</p>
+    </div>
+    <div class="fonctionnalite">
+      <div class="titre txt-fr">Vos appareils et objectifs</div>
+      <div class="titre txt-en">Your cameras and lenses</div>
+      <p class="txt-fr">Enregistrez vos boîtiers et objectifs : les calculs se pré-remplissent automatiquement avec les bonnes valeurs.</p>
+      <p class="txt-en">Save your camera bodies and lenses: calculations are pre-filled automatically with the right values.</p>
+    </div>
+  </div>
+
+  <div class="bandeau">
+    <p class="txt-fr">100 % hors ligne — aucun compte, aucune inscription, aucune donnée envoyée à un serveur. Une bannière publicitaire discrète finance l'application gratuite.</p>
+    <p class="txt-en">100% offline — no account, no sign-up, no data sent to a server. A discreet banner ad funds the free app.</p>
+  </div>
+
+  <footer>
+    <p class="txt-fr"><a href="confidentialite.html">Politique de confidentialité</a> · Contact : <a href="mailto:olivier3dprint@gmail.com">olivier3dprint@gmail.com</a></p>
+    <p class="txt-en"><a href="confidentialite.html?lang=en">Privacy Policy</a> · Contact: <a href="mailto:olivier3dprint@gmail.com">olivier3dprint@gmail.com</a></p>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var html = document.documentElement;
+  var bouton = document.getElementById('bouton-langue');
+
+  function appliquer(langue) {
+    html.setAttribute('data-lang', langue);
+    bouton.textContent = langue === 'en' ? 'LANGUE : FRANÇAIS' : 'LANGUAGE: ENGLISH';
+  }
+
+  var demarrage = params.get('lang') === 'en' ? 'en' : 'fr';
+  appliquer(demarrage);
+
+  bouton.addEventListener('click', function () {
+    appliquer(html.getAttribute('data-lang') === 'en' ? 'fr' : 'en');
+  });
+})();
+</script>
+</body>
+</html>
